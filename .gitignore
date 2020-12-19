@@ -5,3 +5,4 @@ logs
 sandbox
 config.json
 *.swp
+*~
