@@ -237,6 +237,14 @@ class Testable {
                   “$.bot-nick,url”,
                   “$.our-nick, https://github.com/Raku/whateverable”);
 
+        self.test(‘age inquiry (directly)’,
+                  “$.bot-nick, how old are you?”,
+                  /^“{$.our-nick}, ” ‘I was created on ’ [ \d**4 ‘-’ \d**2 ‘-’ \d**2 ] /);
+
+        self.test(‘age inquiry (indirectly)’,
+                  “age, {$.bot-nick}?”,
+                  /^“{$.our-nick}, ” ‘I was created on ’ [ \d**4 ‘-’ \d**2 ‘-’ \d**2 ] /);
+
         use Whateverable;
         self.test(‘thank you (directly)’,
                   “$.bot-nick: thank you!”,

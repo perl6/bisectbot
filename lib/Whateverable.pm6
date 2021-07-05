@@ -110,6 +110,29 @@ multi method irc-to-me(Message $msg where .text ~~ /:i^ uptime \s* $/) {
         ~ “implementing {.language_name} {.language_version}.”
      })
 }
+#| Get the oldest commit DateTime for $*PROGRAM. Needs $*CWD to point to the whateverable git repository.
+sub term:<birthday> {
+    my $dates = run :out, ‘git’, ‘log’, ‘--follow’, ‘--date-order’, ‘--format=%aI’, $*PROGRAM.relative;
+    try { $dates.out.lines(:close).tail.&{ DateTime.new($_) }.Date } \
+        or fail ‘no birthday data available’
+}
+#| Proper answer to “how old are you?”
+sub my-age is export {
+    with birthday {
+        “I was created on $_”
+    }
+    else {
+        .exception.message
+    }
+}
+#| Replying to age inquiry
+multi method irc-to-me(Message $ where .text ~~ /:i^ [‘how old are you’|‘age’] /) {
+    my-age
+}
+#| Replying to age inquiry
+multi method irc-privmsg-channel($msg where .text ~~ /:i [‘how old are you’|‘age’] .* $($msg.server.current-nick) /) {
+    my-age
+}
 #| You're welcome!
 sub you're-welcome is export {
     «
